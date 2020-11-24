@@ -1,0 +1,19 @@
+{
+    "name": "mpemburn/api-consumer",
+    "description": "Configurable consumer for RESTful API's",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mark Pemburn",
+            "email": "mark@pemburn.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Mpemburn\\ApiConsumer\\": "src/"
+        }
+    },
+    "require": {}
+}
