@@ -14,7 +14,8 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected string $queryString;
     protected bool $concatenateParams = false;
 
-    abstract public function getHeaders(): array;
+    abstract public function getApiName(): string;
+    abstract public function getBaseUri(): string;
 
     public function __construct()
     {
@@ -23,14 +24,24 @@ abstract class AbstractEndpoint implements EndpointInterface
         $this->urlParams = collect();
     }
 
+    public function hasBasicAuth(): bool
+    {
+        return ! empty($this->getUsername()) && ! empty($this->getPassword());
+    }
+
     public function getUsername(): string
     {
-        return '5ebc6a65caa3b15554c0ac3bd00f1a6a';
+        return config('api-consumer.' . $this->getApiName() . '.username');
     }
 
     public function getPassword(): string
     {
-        return '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';
+        return config('api-consumer.' . $this->getApiName() . '.password');
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers->toArray();
     }
 
     public function getParams(): array
@@ -117,11 +128,6 @@ abstract class AbstractEndpoint implements EndpointInterface
     public function getRequestType(): ?string
     {
         return null;
-    }
-
-    public function getBaseUri(): ?string
-    {
-        return 'https://pemburns-explorations.myshopify.com/admin/api/2020-10';
     }
 
     public function getEndpoint(): ?string
