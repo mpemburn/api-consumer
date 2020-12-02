@@ -29,12 +29,12 @@ abstract class AbstractEndpoint implements EndpointInterface
         return ! empty($this->getUsername()) && ! empty($this->getPassword());
     }
 
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return config('api-consumer.' . $this->getApiName() . '.username');
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return config('api-consumer.' . $this->getApiName() . '.password');
     }
@@ -42,6 +42,11 @@ abstract class AbstractEndpoint implements EndpointInterface
     public function getHeaders(): array
     {
         return $this->headers->toArray();
+    }
+
+    public function getUri(): ?string
+    {
+        return $this->getBaseUri() . $this->getEndpoint();
     }
 
     public function getParams(): array
@@ -108,23 +113,6 @@ abstract class AbstractEndpoint implements EndpointInterface
         return $this;
     }
 
-    protected function hydrateParams(array $params, array $argArray, array $options = []): void
-    {
-        // If there are options, merge them in
-        $argArray = array_merge($argArray, $options);
-
-        $params = ArrayHelper::parseParamsRecursive($params, $argArray);
-
-        $this->setParams($params);
-    }
-
-    protected function hydrateUrlParams(string $endpoint, array $params = []): string
-    {
-        return ! empty($params)
-            ? StringHelper::replaceVars($endpoint, $params, '{', '}')
-            : $endpoint;
-    }
-
     public function getRequestType(): ?string
     {
         return null;
@@ -132,11 +120,11 @@ abstract class AbstractEndpoint implements EndpointInterface
 
     public function getEndpoint(): ?string
     {
-        // TODO: Implement getEndpoint() method.
+        return null;
     }
 
     public function getRequestName(): ?string
     {
-        // TODO: Implement getRequestName() method.
+        return null;
     }
 }
