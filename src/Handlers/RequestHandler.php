@@ -3,13 +3,14 @@
 namespace Mpemburn\ApiConsumer\Handlers;
 
 use Exception;
-use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Mpemburn\ApiConsumer\Interfaces\EndpointInterface;
 
 class RequestHandler
 {
-    protected $response;
+    protected Response $response;
+    protected string $errorMessage = '';
 
     public function send(EndpointInterface $endpoint): self
     {
@@ -19,10 +20,26 @@ class RequestHandler
                 $httpClient->withBasicAuth($endpoint->getUsername(), $endpoint->getPassword());
             }
 
-            $this->response = $httpClient->send($endpoint->getRequestType(), $endpoint->getEndpoint());
+            switch ($endpoint->getRequestType()) {
+                case 'GET':
+                    $this->response = $httpClient->get($endpoint->getUri(), $endpoint->getParams());
+                    break;
+                case 'POST':
+                    $this->response = $httpClient->post($endpoint->getUri(), $endpoint->getParams());
+                    break;
+                case 'PUT':
+                    $this->response = $httpClient->put($endpoint->getUri(), $endpoint->getParams());
+                    break;
+                case 'PATCH':
+                    $this->response = $httpClient->patch($endpoint->getUri(), $endpoint->getParams());
+                    break;
+                case 'DELETE':
+                    $this->response = $httpClient->delete($endpoint->getUri(), $endpoint->getParams());
+                    break;
+            }
 
         } catch (Exception $e) {
-            $this->response = 'Error: ' . $endpoint->getRequestName() . ' responded with ' . $e->getMessage();
+            $this->errorMessage = 'Error: ' . $endpoint->getRequestName() . ' responded with ' . $e->getMessage();
         }
 
         return $this;
@@ -30,6 +47,6 @@ class RequestHandler
 
     public function getResponse(): string
     {
-        return $this->response->body();
+        return $this->response->clientError() ? $this->errorMessage :  $this->response->body();
     }
 }
