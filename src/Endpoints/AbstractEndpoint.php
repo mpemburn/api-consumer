@@ -118,6 +118,11 @@ abstract class AbstractEndpoint implements EndpointInterface
         return null;
     }
 
+    public function getRequestVerb(): ?string
+    {
+        return $this->getRequestType() ? strtolower($this->getRequestType()) : null;
+    }
+
     public function getEndpoint(): ?string
     {
         return null;

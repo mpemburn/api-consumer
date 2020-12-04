@@ -8,6 +8,7 @@ interface EndpointInterface
     public function getUsername(): ?string;
     public function getPassword(): ?string;
     public function getRequestType(): ?string;
+    public function getRequestVerb(): ?string;
     public function getBaseUri(): ?string;
     public function getUri(): ?string;
     public function getEndpoint(): ?string;
