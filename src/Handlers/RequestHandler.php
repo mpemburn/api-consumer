@@ -3,50 +3,53 @@
 namespace Mpemburn\ApiConsumer\Handlers;
 
 use Exception;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Mpemburn\ApiConsumer\Interfaces\EndpointInterface;
+use Mpemburn\ApiConsumer\Interfaces\ResponseHandlerInterface;
+use RuntimeException;
 
 class RequestHandler
 {
-    protected Response $response;
+    protected ResponseHandlerInterface $responseHandler;
     protected string $errorMessage = '';
+
+    public function __construct(ResponseHandlerInterface $responseHandler)
+    {
+        $this->responseHandler = $responseHandler;
+    }
 
     public function send(EndpointInterface $endpoint): self
     {
+        $response = null;
+
         try {
             $httpClient = Http::withHeaders($endpoint->getHeaders());
             if ($endpoint->hasBasicAuth()) {
                 $httpClient->withBasicAuth($endpoint->getUsername(), $endpoint->getPassword());
             }
 
-            switch ($endpoint->getRequestType()) {
-                case 'GET':
-                    $this->response = $httpClient->get($endpoint->getUri(), $endpoint->getParams());
-                    break;
-                case 'POST':
-                    $this->response = $httpClient->post($endpoint->getUri(), $endpoint->getParams());
-                    break;
-                case 'PUT':
-                    $this->response = $httpClient->put($endpoint->getUri(), $endpoint->getParams());
-                    break;
-                case 'PATCH':
-                    $this->response = $httpClient->patch($endpoint->getUri(), $endpoint->getParams());
-                    break;
-                case 'DELETE':
-                    $this->response = $httpClient->delete($endpoint->getUri(), $endpoint->getParams());
-                    break;
+            // Get the method name for the HTTP client
+            $requestVerb = $endpoint->getRequestVerb();
+            if (method_exists($httpClient, $requestVerb)) {
+                $response = $httpClient->$requestVerb($endpoint->getUri(), $endpoint->getParams());
+            } else {
+                throw new RuntimeException('"Method ' . $requestVerb . ' does not exist"');
             }
 
-        } catch (Exception $e) {
-            $this->errorMessage = 'Error: ' . $endpoint->getRequestName() . ' responded with ' . $e->getMessage();
+        } catch (Exception $exception) {
+            $this->errorMessage = 'Error: ' . $endpoint->getRequestName() . ' responded with ' . $exception->getMessage();
+            $this->responseHandler->setException($exception);
         }
+
+        $this->responseHandler->handle($response);
 
         return $this;
     }
 
-    public function getResponse(): string
+    public function getResponse(): array
     {
-        return $this->response->clientError() ? $this->errorMessage :  $this->response->body();
+        return $this->responseHandler->getSuccess()
+            ? $this->responseHandler->getResponseArray()
+            : $this->responseHandler->getErrorMessage();
     }
 }
