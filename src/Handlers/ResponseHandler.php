@@ -10,7 +10,7 @@ use Mpemburn\ApiConsumer\Interfaces\ResponseHandlerInterface;
 class ResponseHandler implements ResponseHandlerInterface
 {
     protected ?string $responseString;
-    protected array $responseArray;
+    protected array $responseArray = [];
     protected EndpointInterface $currentEndpoint;
     protected bool $success = true;
     protected Exception $exception;
