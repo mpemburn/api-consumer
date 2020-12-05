@@ -133,6 +133,18 @@ abstract class AbstractEndpoint implements EndpointInterface
         return null;
     }
 
+    /**
+     * hydrateUrlParams
+     * Used in an endpoint's getEndPoint method
+     *
+     * Example:
+        return $this->hydrateUrlParams('/member_update/{member_id}', $this->getParams());
+     ...where $params = ['member_id' => 6];
+     * 
+     * @param string $url
+     * @param array $params
+     * @return string
+     */
     protected function hydrateUrlParams(string $url, array $params = []): string
     {
         return preg_replace_callback('/{([\w]+)}/ix', static function ($match) use ($params) {
