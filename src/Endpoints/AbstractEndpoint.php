@@ -10,12 +10,10 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected Collection $headers;
     protected Collection $params;
     protected Collection $urlParams;
-    protected string $responseParam;
     protected string $queryString;
     protected bool $concatenateParams = false;
 
     abstract public function getApiName(): string;
-    abstract public function getBaseUri(): string;
 
     public function __construct()
     {
@@ -27,6 +25,11 @@ abstract class AbstractEndpoint implements EndpointInterface
     public function hasBasicAuth(): bool
     {
         return ! empty($this->getUsername()) && ! empty($this->getPassword());
+    }
+
+    public function getBaseUri(): string
+    {
+        return config('api-consumer.' . $this->getApiName() . '.base_uri');
     }
 
     public function getUsername(): ?string
@@ -140,7 +143,7 @@ abstract class AbstractEndpoint implements EndpointInterface
      * Example:
         return $this->hydrateUrlParams('/member_update/{member_id}', $this->getParams());
      ...where $params = ['member_id' => 6];
-     * 
+     *
      * @param string $url
      * @param array $params
      * @return string
