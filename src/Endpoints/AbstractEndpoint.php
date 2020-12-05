@@ -132,4 +132,11 @@ abstract class AbstractEndpoint implements EndpointInterface
     {
         return null;
     }
+
+    protected function hydrateUrlParams(string $url, array $params = []): string
+    {
+        return preg_replace_callback('/{([\w]+)}/ix', static function ($match) use ($params) {
+            return !empty($params[$match[1]]) ? $params[$match[1]] : $match[0];
+        }, $url);
+    }
 }
