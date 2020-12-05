@@ -1,7 +1,8 @@
 {
     "name": "mpemburn/api-consumer",
     "description": "Configurable consumer for RESTful API's",
-    "type": "project",
+    "type": "library",
+    "keywords": ["api","restful","laravel"],
     "license": "MIT",
     "authors": [
         {
