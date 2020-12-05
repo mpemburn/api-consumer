@@ -1,9 +1,9 @@
-### API Consumer
+## API Consumer
 
-#### About
+### About
 The `api-consumer` package allows you to create simple endpoint wrappers for RESTful API's. 
 
-#### Installation
+### Installation
 
 You can install this package via composer:
 
@@ -11,8 +11,8 @@ You can install this package via composer:
 
 The package will automatically register itself.
 
-#### How to use
-##### Configuration
+### How to use
+#### Configuration
 The package will add the file `config/api-consumer.php` to your project.  This returns an array containing the keys and variables used by the endpoint classes you'll create to consume one or more RESTful APIs.  The format will look like this:
 
     'shopify' => [
@@ -36,7 +36,7 @@ To make this more secure, you should store the actual variables in your `.env` f
     
 You can add as many API's as you need to the config file, as long as each has the API name (i.e., 'shopify' in this instance) at top-level of the array.
 
-##### Class Structure
+#### Class Structure
 While there's no absolute requirement to structure your class files this way, the suggested heirarchy is:
 ```
 project
@@ -55,7 +55,7 @@ project
 │       │   ...
 ```
 
-##### Primary Classes
+#### Primary Classes
 Each primary class (e.g., `ShopifyEndpoint`, `DiscourseEndpoint` above) needs to extend this package's `AbstractEndpoint` class. Individual endpoints then extends its primary class.  For example:
 ```php
 <?php
@@ -79,16 +79,18 @@ class ShopifyEndpoint extends AbstractEndpoint
     }
 }
 ```
-It's important to return the exact same name from `getApiName()` That you specified in the `api-consumer` config file.
-NOTE: No headers are assumed, so you should add them in the constructor as shown above.
+It's important to return the exact same name from `getApiName()` that you specified in the `api-consumer` config file.
 
+**NOTE**: No headers are assumed, so you should add them in the constructor as shown above.
+
+#### Endpoint Classes
 An individual endpoint should be structured like this:
 ```php
 <?php
 
 namespace App\Api\Shopify;
 
-class Products extends ShopifyEndpoint
+class GetProducts extends ShopifyEndpoint
 {
     public function getRequestType(): ?string
     {
@@ -102,7 +104,37 @@ class Products extends ShopifyEndpoint
 
     public function getRequestName(): ?string
     {
-        return 'Get Products';
+        return 'Get CreateProduct';
+    }
+}
+```
+To create a `POST` endpoint:
+
+```php
+<?php
+
+namespace App\Api\Shopify;
+
+class CreateProduct extends ShopifyEndpoint
+{
+    public function getRequestType(): ?string
+    {
+        return 'POST';
+    }
+
+    public function getEndpoint(): ?string
+    {
+        return '/products.json';
+    }
+
+    public function getRequestName(): ?string
+    {
+        return 'Create Product';
+    }
+
+    public function create(array $product): void
+    {
+        $this->setParams($product);
     }
 }
 ```
