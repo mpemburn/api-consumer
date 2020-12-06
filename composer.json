@@ -23,7 +23,7 @@
         },
         "laravel": {
             "providers": [
-                "Mpemburn\\ApiConsumer\\Providers\\ApiConsumerProvider"
+                "Mpemburn\\ApiConsumer\\ApiConsumerProvider"
             ]
         }
     }
