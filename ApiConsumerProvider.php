@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Mpemburn\ApiConsumer\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Mpemburn\ApiConsumer\Handlers\ResponseHandler;
