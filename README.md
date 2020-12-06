@@ -1,7 +1,11 @@
 ## API Consumer
+[![Latest Version](https://img.shields.io/github/release/mpemburn/api-consumer.svg?style=flat-square)](https://github.com/spatie/laravel-analytics/releases)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/mpemburn/api-consumer.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-analytics)
 
 ### About
-The `api-consumer` package allows you to create simple endpoint wrappers for RESTful API's. 
+The `api-consumer` package allows you to create simple endpoint wrappers for RESTful API's.
+
 
 ### Installation
 
@@ -15,7 +19,6 @@ Next, you will need to publish the package in order to copy `api-consumer.php` i
 ```
 php artisan vendor:publish --provider="Mpemburn\ApiConsumer\ApiConsumerProvider"
 ``` 
-
 
 ### How to use
 #### Configuration
