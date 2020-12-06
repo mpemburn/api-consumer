@@ -16,6 +16,11 @@
             "Mpemburn\\ApiConsumer\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Mpemburn\\ApiConsumer\\": "src/"
+        }
+    },
     "require": {},
     "extra": {
         "branch-alias": {
