@@ -10,18 +10,14 @@
             "email": "mark@pemburn.com"
         }
     ],
-    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Mpemburn\\ApiConsumer\\": "src/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Mpemburn\\ApiConsumer\\": "src/"
-        }
+    "require": {
+        "php": ">=7.2"
     },
-    "require": {},
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
@@ -31,5 +27,6 @@
                 "Mpemburn\\ApiConsumer\\ApiConsumerProvider"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
