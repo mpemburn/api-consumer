@@ -9,7 +9,13 @@ You can install this package via composer:
 
 `composer require mpemburn/api-consumer`
 
-The package will automatically register itself.
+The package will automatically register the service provider `ApiConsumerProvider`.
+
+Next, you will need to publish the package in order to copy `api-consumer.php` into your `config` directory:
+```
+php artisan vendor:publish --provider="Mpemburn\ApiConsumer\ApiConsumerProvider"
+``` 
+
 
 ### How to use
 #### Configuration
