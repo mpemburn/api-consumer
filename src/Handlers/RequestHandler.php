@@ -3,6 +3,7 @@
 namespace Mpemburn\ApiConsumer\Handlers;
 
 use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Http;
 use Mpemburn\ApiConsumer\Interfaces\EndpointInterface;
 use Mpemburn\ApiConsumer\Interfaces\ResponseHandlerInterface;
@@ -11,6 +12,15 @@ use RuntimeException;
 class RequestHandler
 {
     protected ResponseHandlerInterface $responseHandler;
+
+    public static function make(): ?self
+    {
+        try {
+            return app()->make(__CLASS__);
+        } catch (BindingResolutionException $e) {
+            return null;
+        }
+    }
 
     public function __construct(ResponseHandlerInterface $responseHandler)
     {
