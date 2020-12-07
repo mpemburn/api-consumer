@@ -113,10 +113,26 @@ class GetProducts extends ShopifyEndpoint
 
     public function getRequestName(): ?string
     {
-        return 'Get CreateProduct';
+        return 'Get Products';
     }
 }
 ```
+### Making Requests
+
+A simple example of making a request with a `GET` endpoint:
+
+```php
+Route::get('get_products', function () {
+    $requestManager = RequestHandler::make();
+    $products = new Products();
+    if ($requestManager) {
+        return $requestManager->send($products)
+            ->getResponse();
+    }
+});
+
+```
+### POST Requests
 To create a `POST` endpoint:
 
 ```php
@@ -147,3 +163,57 @@ class CreateProduct extends ShopifyEndpoint
     }
 }
 ```
+The request might look like this:
+```php
+Route::post('create_product', function (Request $request) {
+    $requestManager = RequestHandler::make();
+    $createProduct = new CreateProduct();
+    $createProduct->create($request->toArray());
+
+    if ($requestManager) {
+        return $requestManager->send($createProduct)
+            ->getResponse();
+    }
+});
+```
+### URL's with variables
+Some API endpoints require variable parts in the URL string. For example, if you need to update a user, the API endpoint might include the user's ID as part of the URL:
+```
+https://roster.org/api/v1/users/update/123
+```
+
+In this case, you would set up your `PUT` endpoint something like this:
+```php
+<?php
+
+namespace App\Api\Roster;
+
+class UpdateUser extends RosterEndpoint
+{
+    public function getRequestType(): ?string
+    {
+        return 'PUT';
+    }
+
+    public function getEndpoint(): ?string
+    {
+        return $this->hydrateUrlParams('/users/update/{user_id}', $this->getUrlParams());
+    }
+
+    public function getRequestName(): ?string
+    {
+        return 'Update User';
+    }
+
+    public function update(int $userId, array $userData): void
+    {
+        $this->setParams($userData);
+        $this->addUrlParam('user_id', $userId);
+    }
+}
+```
+Here, the `update` method takes the `$userId` and array of the data to be updated (`$userData`).  The `setParams` method will add all of the `$userData` to a Larvel Collection, and the `addUrlParam` method adds `$memberId` to a similar collection.
+
+Next, in the `getEndpoint` method, we can pass the URL string with `user_id` enclosed in curly braces, which causes it to be seen as a variable. Passing this into the `hydrateUrlParams` method along with a call to `getUrlParams` will replace `{user_id}` with whatever was passed into the `update` method.
+
+**NOTE**: You can pass as many variables as needed using this method.
