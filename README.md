@@ -166,6 +166,7 @@ class CreateProduct extends ShopifyEndpoint
         $this->setParams($product);
     }
 }
+
 ```
 The request might look like this:
 ```php
@@ -180,6 +181,8 @@ Route::post('create_product', function (Request $request) {
     }
 });
 ```
+The `$request` in this case should contain and array whose key match those specified in the API documents.
+
 ### URL's with variables
 Some API endpoints require variable parts in the URL string. For example, if you need to update a user, the API endpoint might include the user's ID as part of the URL:
 ```
