@@ -9,7 +9,7 @@ use Mpemburn\ApiConsumer\Interfaces\EndpointInterface;
 use Mpemburn\ApiConsumer\Interfaces\ResponseHandlerInterface;
 use RuntimeException;
 
-class RequestHandler
+class RequestManager
 {
     protected ResponseHandlerInterface $responseHandler;
     protected ?string $authToken = null;
