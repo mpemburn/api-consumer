@@ -59,6 +59,11 @@ class ResponseHandler implements ResponseHandlerInterface
         return $this->responseArray['code'] ?? null;
     }
 
+    public function getResponseKeyValue(string $key): ?string
+    {
+        return $this->responseArray[$key];
+    }
+
     public function getResponseMessage(): ?string
     {
         return $this->responseArray['message'] ?? null;

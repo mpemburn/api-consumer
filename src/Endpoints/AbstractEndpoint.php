@@ -12,6 +12,9 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected Collection $urlParams;
     protected string $queryString;
     protected bool $concatenateParams = false;
+    protected ?string $authTokenEndpoint = null;
+    protected ?string $authTokenFetchKeyName = null;
+    protected ?string $authTokenResponseName = null;
 
     abstract public function getApiName(): string;
 
@@ -20,6 +23,11 @@ abstract class AbstractEndpoint implements EndpointInterface
         $this->headers = collect();
         $this->params = collect();
         $this->urlParams = collect();
+
+        // If the value for the key name and API key have been specified, add to the params
+        if ($this->authTokenFetchKeyName && $this->getApiKey()) {
+            $this->addParam($this->authTokenFetchKeyName, $this->getApiKey());
+        }
     }
 
     public function hasBasicAuth(): bool
@@ -27,9 +35,36 @@ abstract class AbstractEndpoint implements EndpointInterface
         return ! empty($this->getUsername()) && ! empty($this->getPassword());
     }
 
+    public function usesAuthToken(): bool
+    {
+        return false;
+    }
+
+    public function getAuthTokenEndpoint(): EndpointInterface
+    {
+        return new $this->authTokenEndpoint();
+    }
+
+    public function getAuthTokenResponseName(): ?string
+    {
+        return $this->authTokenResponseName;
+    }
+
+    public function addAuthToken(string $paramName, string $authToken): void
+    {
+        if ($paramName && $authToken) {
+            $this->addParam($paramName, $authToken);
+        }
+    }
+
     public function getBaseUri(): string
     {
         return config('api-consumer.' . $this->getApiName() . '.base_uri');
+    }
+
+    public function getApiKey(): string
+    {
+        return config('api-consumer.' . $this->getApiName() . '.api_key');
     }
 
     public function getUsername(): ?string

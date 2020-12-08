@@ -10,6 +10,7 @@ interface EndpointInterface
     public function getRequestType(): ?string;
     public function getRequestVerb(): ?string;
     public function getBaseUri(): ?string;
+    public function getApiKey(): ?string;
     public function getUri(): ?string;
     public function getEndpoint(): ?string;
     public function getRequestName(): ?string;
