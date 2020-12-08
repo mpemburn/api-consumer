@@ -45,6 +45,10 @@ To make this more secure, you should store the actual variables in your `.env` f
     
 You can add as many API's as you need to the config file, as long as each has the API name (i.e., 'shopify' in this instance) at top-level of the array.
 
+**NOTE**: After making changes to a this config file, it's important to run:
+```
+php artisan config:cache
+``` 
 #### Class Structure
 While there's no absolute requirement to structure your class files this way, the suggested heirarchy is:
 ```
@@ -64,8 +68,8 @@ project
 │       │   ...
 ```
 
-#### Primary Classes
-Each primary class (e.g., `ShopifyEndpoint`, `DiscourseEndpoint` above) needs to extend this package's `AbstractEndpoint` class. Individual endpoints then extends its primary class.  For example:
+#### Parente Endpoint Classes
+Each parent endpoint class (e.g., `ShopifyEndpoint`, `DiscourseEndpoint` above) needs to extend this package's `AbstractEndpoint` class. Individual endpoints then extends its primary class.  For example:
 ```php
 <?php
 
@@ -123,7 +127,7 @@ A simple example of making a request with a `GET` endpoint:
 
 ```php
 Route::get('get_products', function () {
-    $requestManager = RequestHandler::make();
+    $requestManager = RequestManager::make();
     $products = new Products();
     if ($requestManager) {
         return $requestManager->send($products)
@@ -166,7 +170,7 @@ class CreateProduct extends ShopifyEndpoint
 The request might look like this:
 ```php
 Route::post('create_product', function (Request $request) {
-    $requestManager = RequestHandler::make();
+    $requestManager = RequestManager::make();
     $createProduct = new CreateProduct();
     $createProduct->create($request->toArray());
 
@@ -217,3 +221,66 @@ Here, the `update` method takes the `$userId` and array of the data to be update
 Next, in the `getEndpoint` method, we can pass the URL string with `user_id` enclosed in curly braces, which causes it to be seen as a variable. Passing this into the `hydrateUrlParams` method along with a call to `getUrlParams` will replace `{user_id}` with whatever was passed into the `update` method.
 
 **NOTE**: You can pass as many variables as needed using this method.
+
+### API's That Use Authorization (auth) Tokens
+Some API's require you to use an auth token for each endpoint call. The typical pattern is to fetch the auth token by sending a `GET` request to the API with a secret key provided to by the API's developer's console. Once you have the auth token, you add it to the request parameters for each subsequent call.
+
+This package supports this model by allowing you to create a special endpoint for the purpose.  For example:
+```
+https://roster.org/api/v1/get_auth?key=V2hhdCBpcyB0aGF0IHN0cmFuZ2Ugc291bmQ
+```
+To call this, your `GetAuthToken` endpoint should look like this:
+```php
+<?php
+
+namespace App\Api\Roster;
+
+class GetAuthToken extends RosterEndpoint
+{
+    protected ?string $authTokenFetchKeyName = 'key';
+    protected ?string $authTokenResponseName = 'auth_token';
+
+    public function getRequestType(): ?string
+    {
+        return 'GET';
+    }
+
+    public function getEndpoint(): ?string
+    {
+        return '/get_auth';
+    }
+
+    public function getRequestName(): ?string
+    {
+        return 'Get Auth Token';
+    }
+}
+```
+Here the `$authTokenFetchKeyName` property refers to the parameter name of the API key, and the `$authTokenResponseName` refers to the name that the API assigns to the auth token.  The response might look like this:
+```
+{
+  "auth_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdXRoX2tleSI6IlYyaGhkQ0JwY3lCMGFHRjBJSE4wY21GdVoyVWdjMjkxYm1RIiwibm93IjoxNjA3NDM1MTQ2fQ.DKgv6rTKnRa2k_WOT5LbvNRUhgSt6uRAnnO84Weka0CVifs6tZhkDHAXQQJibJYQVjWmYooCLtFQfNkFc4oS-z3X-rgj80qpjh8dFFfq3mM5zBvbbyhxWFKzhLmownsOJZCjOiJE5nGTazenMH-0bc5CjWW8SzlXPgksIRRK8bg"
+}
+```
+
+In addition, your parent endpoint needs to include a reference to the `GetAuthToken` class:
+```php
+...
+class RosterEndpoint extends AbstractEndpoint
+{
+    protected ?string $authTokenEndpoint = GetAuthToken::class;
+...
+```
+
+By default, the token will be discarded after each request.  This is usually a good idea since many/most auth tokens are time limited.  In the case where you need to make a series of requests in rapid succession, you can use the `preserveAuthToken` method of the `RequestManager`:
+```php
+$requestManager = RequestManager::make();
+$members = new GetMembers();
+
+if ($requestManager) {
+return $requestManager->preserveAuthToken()
+    ->send($members)
+    ->getResponse();
+}
+```
+**NOTE**: The `preserveAuthToken` call must come before call to `send`.
