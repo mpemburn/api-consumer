@@ -68,7 +68,7 @@ project
 │       │   ...
 ```
 
-#### Parente Endpoint Classes
+#### Parent Endpoint Classes
 Each parent endpoint class (e.g., `ShopifyEndpoint`, `DiscourseEndpoint` above) needs to extend this package's `AbstractEndpoint` class. Individual endpoints then extends its primary class.  For example:
 ```php
 <?php
